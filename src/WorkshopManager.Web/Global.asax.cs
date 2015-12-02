@@ -50,7 +50,7 @@ namespace WorkshopManager.Web
             if (dbItem == null)
             {
                 dbItem = new TokenCacheItem {Key = item.Key};
-                session.Store(dbItem);
+                session.Store(dbItem, item.Key);
             }
             dbItem.Token = item.Token;
             dbItem.Expires = item.Expires;
