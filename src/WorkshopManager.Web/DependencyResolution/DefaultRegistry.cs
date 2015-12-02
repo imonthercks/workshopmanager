@@ -23,6 +23,7 @@ using Raven.Client;
 using Raven.Client.Document;
 using StructureMap.Pipeline;
 using StructureMap.Web;
+using Thinktecture.IdentityModel.Web;
 
 namespace WorkshopManager.Web.DependencyResolution {
     using StructureMap.Configuration.DSL;
@@ -41,6 +42,8 @@ namespace WorkshopManager.Web.DependencyResolution {
 
             var docStore = GetRavenDbDocumentStore();
 
+            PassiveSessionConfiguration.ConfigureSessionCache(new RavenDbTokenCacheRepository(docStore));
+
             var config = MembershipRebootConfig.Create();
             config.RequireAccountVerification = false;
             For<MembershipRebootConfiguration<HierarchicalUserAccount>>().Use(config);
@@ -55,8 +58,8 @@ namespace WorkshopManager.Web.DependencyResolution {
         private IDocumentStore GetRavenDbDocumentStore()
         {
             var docStore = new DocumentStore();
-            var ravenDbUrl = System.Configuration.ConfigurationManager.AppSettings.Get("MembershipReboot.RavenDb.Url");
-            var ravenApiKey = System.Configuration.ConfigurationManager.AppSettings.Get("MembershipReboot.RavenDb.ApiKey");
+            var ravenDbUrl = Environment.GetEnvironmentVariable("MembershipReboot.RavenDb.Url") ?? System.Configuration.ConfigurationManager.AppSettings.Get("MembershipReboot.RavenDb.Url");
+            var ravenApiKey = Environment.GetEnvironmentVariable("MembershipReboot.RavenDb.ApiKey") ?? System.Configuration.ConfigurationManager.AppSettings.Get("MembershipReboot.RavenDb.ApiKey");
 
             if (!String.IsNullOrEmpty(ravenDbUrl))
             {
